@@ -59,6 +59,7 @@ Junction Function checks if there is any junction between two particles, and if 
 This the main function where The magic happens, at first it calls Build Funtion to creat the data set, then it creats the SDL2 window and checks for errors if there is any, after that it puts every particle in movement, the it check the border
 and the junction, after that it draws the particle but it's not present in the screen yet, until all the particle are put in place and drawn then SDL2 displays them all in the same time, then it waits, i used usleep() for that to control the
 speed in ms. then it repeats the cycle again and again!
+
 ----
 
 # Parameters
