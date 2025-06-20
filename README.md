@@ -75,6 +75,6 @@ These are a few parameters to control the show, you got the width and height of 
 
 In the end, you can run the .c file with:
 ```
-gcc main.c -o o -lSDL2
+gcc main.c -o main -lSDL2
 ```
 Or in windows, you can just run the main.exe file in Windows.Exe folder (make sure main.exe and SDL2.dll are in the same folder)
