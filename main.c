@@ -10,6 +10,7 @@
 #define width 640
 #define height 480
 #define MAX 300
+#define speed 10000
 
 
 typedef struct particle{
@@ -21,7 +22,8 @@ typedef struct particle{
 
 void main_func();
 particle* build_list();
-void coalision(particle* current, particle* temp);
+void junction(particle* current, particle* temp);
+void border_check(particle* temp);
 
 
 
@@ -31,13 +33,11 @@ void main_func(){
 	particle* head = build_list();
 	particle* temp;
 
-
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) { fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError()); exit(-1); }
 	SDL_Window* window = SDL_CreateWindow("Particle Movement", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 	if (window == NULL) { fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError()); SDL_Quit(); exit(-1); }
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer == NULL) { fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError()); SDL_DestroyWindow(window); SDL_Quit(); exit(-1); }
-
 
 	while(true){
 
@@ -51,7 +51,6 @@ void main_func(){
 			SDL_Event event;                                                           //
 			while (SDL_PollEvent(&event)) { if (event.type == SDL_QUIT) { exit(-1); }} // for exiting
 
-
 			switch (temp->d){
 				case 'l': temp->x--; break;
 				case 'u': temp->x--; temp->y--; break;
@@ -63,73 +62,62 @@ void main_func(){
 				case 'z': temp->x--; temp->y++; break;
 
 			}
-			if (temp->x == -1){
-				switch (temp->d){
-					case 'l': temp->d='r'; break;
-					case 'u': temp->d='x'; temp->y--; break;
-					case 'z': temp->d='y'; temp->y++; break;
-				}
-				temp->x = 1;
-			}
-			else if (temp->x == width){
-				switch (temp->d){
-					case 'r': temp->d='l'; break;
-					case 'x': temp->d='u'; temp->y--; break;
-					case 'y': temp->d='z'; temp->y++; break;
-				}
-				temp->x = width-1;
-			}
-
-			if (temp->y == -1){
-				switch (temp->d){
-					case 't': temp->d='b'; break;
-					case 'u': temp->d='z'; temp->x--; break;
-					case 'x': temp->d='y'; temp->x++; break;
-				}
-				temp->y = 1;
-			}
-			else if (temp->y == height){
-				switch (temp->d){
-					case 'b': temp->d='t'; break;
-					case 'z': temp->d='u'; temp->x--; break;
-					case 'y': temp->d='x'; temp->x++; break;
-				}
-				temp->y = height-1;
-			}
-
-
-
-
-
-			coalision(temp, head);
-
+			border_check(temp);
+			junction(temp, head);
 
 			SDL_RenderDrawPoint(renderer, temp->x, temp->y);
 			temp = temp->next;
 		}
-
-
-
 		SDL_RenderPresent(renderer);
-		usleep(10000);
-
+		usleep(speed);
 	}
-
-
-
-
-
-
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-
-
 }
 
 
 
-void coalision(particle* current, particle* temp){
+void border_check(particle* temp){
+	
+	if (temp->x == -1){
+		switch (temp->d){
+			case 'l': temp->d='r'; break;
+			case 'u': temp->d='x'; temp->y--; break;
+			case 'z': temp->d='y'; temp->y++; break;
+		}
+		temp->x = 1;
+	}
+	else if (temp->x == width){
+		switch (temp->d){
+			case 'r': temp->d='l'; break;
+			case 'x': temp->d='u'; temp->y--; break;
+			case 'y': temp->d='z'; temp->y++; break;
+		}
+		temp->x = width-1;
+	}
+
+	if (temp->y == -1){
+		switch (temp->d){
+			case 't': temp->d='b'; break;
+			case 'u': temp->d='z'; temp->x--; break;
+			case 'x': temp->d='y'; temp->x++; break;
+		}
+		temp->y = 1;
+	}
+	else if (temp->y == height){
+		switch (temp->d){
+			case 'b': temp->d='t'; break;
+			case 'z': temp->d='u'; temp->x--; break;
+			case 'y': temp->d='x'; temp->x++; break;
+		}
+		temp->y = height-1;
+	}
+}
+
+
+
+void junction(particle* current, particle* temp){
 
 	while(temp != current){
 
